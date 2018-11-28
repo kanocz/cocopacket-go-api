@@ -57,7 +57,6 @@ func main() {
 	ipsToAdd := make([]string, 0, len(ips))
 	for _, ip := range ips {
 		if _, exist := existIPs.Ping.IPs[ip]; !exist {
-			log.Println("add", ip, "to list", exist)
 			ipsToAdd = append(ipsToAdd, ip)
 		}
 	}
