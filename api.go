@@ -110,3 +110,25 @@ func DeleteIP(ip string) error {
 
 	return nil
 }
+
+// DeleteIPs function deletes multiply ips using only one API call
+func DeleteIPs(ips []string) error {
+	var r result
+
+	err := Send("PUT", mainAPIURL+"/v1/mconfig/delete", map[string]interface{}{
+		"ips": ips,
+	}, &r)
+	if nil != err {
+		return err
+	}
+
+	if r.Result != "OK" && "" != r.Error {
+		return errors.New(r.Error)
+	}
+
+	if r.Result != "OK" {
+		return errors.New("unknown error")
+	}
+
+	return nil
+}
