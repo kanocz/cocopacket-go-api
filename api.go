@@ -25,7 +25,7 @@ func GetConfigInfo() (ConfigInfo, error) {
 func GetSlaveList() ([]string, error) {
 	var result map[string]string
 	err := Get(mainAPIURL+"/v1/slaves", &result)
-	list := make([]string, len(result))
+	list := make([]string, 0, len(result))
 	for slave := range result {
 		list = append(list, slave)
 	}
