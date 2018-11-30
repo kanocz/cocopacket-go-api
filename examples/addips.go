@@ -21,9 +21,12 @@ var (
 	group  = flag.String("group", "auto", "to which group add ips")
 	fav    = flag.Bool("favourite", false, "Set new added ips as favourite")
 	stdin  = flag.Bool("stdin", false, "read ip list from stdin instead of command line")
+	slaves = flag.String("slaves", "", "comma separated list of slaves, all slaves if empty")
 )
 
 func main() {
+	var err error
+
 	flag.Parse()
 	if "" == *url {
 		fmt.Println("Usage: ", os.Args[0], "[flags] [ip[ ip[ ip...]]]")
@@ -33,9 +36,12 @@ func main() {
 
 	api.Init(*url, *user, *passwd)
 
-	slaves, err := api.GetSlaveList()
-	if nil != err {
-		log.Fatalln("Error on slave list get:", err)
+	slaveList := strings.Split(*slaves, ",")
+	if 0 == len(slaveList) || ((1 == len(slaveList)) && ("" == slaveList[0])) {
+		slaveList, err = api.GetSlaveList()
+		if nil != err {
+			log.Fatalln("Error on slave list get:", err)
+		}
 	}
 
 	var ips []string
@@ -66,7 +72,7 @@ func main() {
 		return
 	}
 
-	err = api.AddIPs(ipsToAdd, slaves, *desc, []string{*group + "->"}, *fav)
+	err = api.AddIPs(ipsToAdd, slaveList, *desc, []string{*group + "->"}, *fav)
 	if nil != err {
 		log.Fatalln("Error add ips call:", err)
 	}
