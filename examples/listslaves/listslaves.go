@@ -20,7 +20,7 @@ var (
 func main() {
 	flag.Parse()
 	if "" == *url {
-		fmt.Println("Usage: ", os.Args[0], "[flags] [ip[ ip[ ip...]]]")
+		fmt.Println("Usage: ", os.Args[0], "[flags]")
 		flag.Usage()
 		return
 	}
