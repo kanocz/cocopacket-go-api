@@ -2,6 +2,7 @@ package api
 
 import (
 	"errors"
+	"net/url"
 )
 
 var (
@@ -131,4 +132,45 @@ func DeleteIPs(ips []string) error {
 	}
 
 	return nil
+}
+
+// ListUsers return map with logins and associated boolean indicating if user is admin
+func ListUsers() (map[string]bool, error) {
+	var users map[string]bool
+	err := Get(mainAPIURL+"/v1/users", &users)
+	return users, err
+}
+
+// AddUser adds new user (or replaces existing)
+func AddUser(login string, password string, admin bool) (map[string]bool, error) {
+
+	var users map[string]bool
+	t := "user"
+	if admin {
+		t = "admin"
+	}
+
+	err := SendForm("PUT", mainAPIURL+"/v1/users", url.Values{
+		"login":  []string{login},
+		"passwd": []string{password},
+		"type":   []string{t},
+	}, &users)
+	if nil != err {
+		return nil, err
+	}
+
+	return users, err
+}
+
+// DeleteUser removes user from master
+func DeleteUser(login string) (map[string]bool, error) {
+
+	var users map[string]bool
+
+	err := Send("DELETE", mainAPIURL+"/v1/users?login="+url.QueryEscape(login), nil, &users)
+	if nil != err {
+		return nil, err
+	}
+
+	return users, err
 }
