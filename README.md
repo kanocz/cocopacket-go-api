@@ -4,6 +4,15 @@ cocopacket.com API implementation implemented in golang
 ## api examples
 please look at examples folder - there are some usefull tools that are just prepared for usege covering basic functions like managing ips, users and so on
 
+all examples has such flags:
+* `-url` - link to your master instance like `http://yourname.client.cocopacket.com/`
+* `-user` - login of user, usualy `admin`
+* `-password` - just password
+
+some examples has additional flags, just run to see
+
+P.S.: in every examples folder just run `go build` to compile
+
 ## running cocopacket-slave from docker
 some users asks if it's possible to run cocopacket-slave in a docker containter. Sure it's possible, but you'll need some basic knowlage about docker itself and port forwarding. Example docker file:
 
