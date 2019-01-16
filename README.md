@@ -11,6 +11,13 @@ all examples has such flags:
 
 some examples has additional flags, just run to see
 
+few examples:
+```bash
+./listips -url 'http://yourname.client.cocopacket.com/' -user admin -password helloWorld
+./listslaves -url 'http://yourname.client.cocopacket.com/' -user admin -password helloWorld
+./addslave -url 'http://yourname.client.cocopacket.com/' -user admin -password helloWorld 1.1.1.1 3030 NEWSLAVE
+```
+
 P.S.: in every examples folder just run `go build` to compile
 
 ## running cocopacket-slave from docker
