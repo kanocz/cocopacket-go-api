@@ -2,6 +2,7 @@ package api
 
 import (
 	"errors"
+	"net"
 	"net/url"
 )
 
@@ -31,6 +32,52 @@ func GetSlaveList() ([]string, error) {
 		list = append(list, slave)
 	}
 	return list, err
+}
+
+// AddSlave adds slave to master on ip:port with name
+// and possibly copy list of ips from just existing slave copyFrom
+func AddSlave(ip net.IP, port uint16, name string, copyFrom string) error {
+	var r result
+
+	err := Send("POST", mainAPIURL+"/v1/slaves", map[string]interface{}{
+		"ip":   ip.String(),
+		"port": port,
+		"name": name,
+		"copy": copyFrom,
+	}, &r)
+	if nil != err {
+		return err
+	}
+
+	if r.Result != "OK" && "" != r.Error {
+		return errors.New(r.Error)
+	}
+
+	if r.Result != "OK" {
+		return errors.New("unknown error")
+	}
+
+	return nil
+}
+
+// DeleteSlave removes slave from master
+func DeleteSlave(slave string) error {
+	var r result
+
+	err := Send("DELETE", mainAPIURL+"/v1/slaves?slave="+url.QueryEscape(slave), nil, &r)
+	if nil != err {
+		return err
+	}
+
+	if r.Result != "OK" && "" != r.Error {
+		return errors.New(r.Error)
+	}
+
+	if r.Result != "OK" {
+		return errors.New("unknown error")
+	}
+
+	return nil
 }
 
 // AddIP is simple interface for single IP adding
