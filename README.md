@@ -1,2 +1,2 @@
 # cocopacket-go-api
-cocopacket.com API implementation on golang
+cocopacket.com API implementation implemented in golang
