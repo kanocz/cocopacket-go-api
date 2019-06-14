@@ -221,3 +221,14 @@ func DeleteUser(login string) (map[string]bool, error) {
 
 	return users, err
 }
+
+// GroupStats returns stats for all IPs/URLs in group for about last 24 hours with 1-hour aggregation (report -> limit only to ip+slaves selected for report using frontend)
+func GroupStats(group string, report bool) (GroupStatsData, error) {
+	var data GroupStatsData
+	reportAdd := ""
+	if report {
+		reportAdd = "?report=true"
+	}
+	err := Get(mainAPIURL+"/v1/catstats/"+url.QueryEscape(group+"->")+reportAdd, &data)
+	return data, err
+}

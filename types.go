@@ -34,3 +34,16 @@ type ConfigInfo struct {
 		Interval float32             `json:"interval"`
 	}
 }
+
+// AvgChunk is part of GroupStatsData struct
+type AvgChunk struct {
+	Count   int     `json:"count"`   // total count of tests
+	Loss    int     `json:"loss"`    // count of lost tests
+	Latency float32 `json:"latency"` // total SUMM of latency
+}
+
+// GroupStatsData is result of GroupStats api call
+type GroupStatsData struct {
+	Ping map[string]map[int64]*AvgChunk
+	HTTP map[string]map[int64]*AvgChunk
+}
