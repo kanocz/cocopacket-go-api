@@ -232,3 +232,50 @@ func GroupStats(group string, report bool) (GroupStatsData, error) {
 	err := Get(mainAPIURL+"/v1/catstats/"+url.QueryEscape(group+"->")+reportAdd, &data)
 	return data, err
 }
+
+// IPsSetSlaves add/remove slaves for list of ips, in case of "true" slave is added, in case of "false" slave removed, unlisted slaves are untouched
+func IPsSetSlaves(ips []string, slaves map[string]bool) error {
+
+	var r result
+
+	err := Send("PUT", mainAPIURL+"/v1/mconfig/slaves", map[string]interface{}{
+		"ips":    ips,
+		"slaves": slaves,
+	}, &r)
+	if nil != err {
+		return err
+	}
+
+	if r.Result != "OK" && "" != r.Error {
+		return errors.New(r.Error)
+	}
+
+	if r.Result != "OK" {
+		return errors.New("unknown error")
+	}
+
+	return nil
+}
+
+// GroupSetSlaves add/remove slaves for all ips in group, in case of "true" slave is added, in case of "false" slave removed, unlisted slaves are untouched; pass recursive=true to include subgroups
+func GroupSetSlaves(group string, slaves map[string]bool, recursive bool) error {
+	var r result
+
+	err := Send("PUT", mainAPIURL+"/v1/groupslaves/"+url.QueryEscape(group+"->"), map[string]interface{}{
+		"recursive": recursive,
+		"slaves":    slaves,
+	}, &r)
+	if nil != err {
+		return err
+	}
+
+	if r.Result != "OK" && "" != r.Error {
+		return errors.New(r.Error)
+	}
+
+	if r.Result != "OK" {
+		return errors.New("unknown error")
+	}
+
+	return nil
+}
