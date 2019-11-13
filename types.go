@@ -17,6 +17,18 @@ type TestDesc struct {
 	AS          int64     `json:"as"`
 }
 
+// GroupConfig == settings for group :)
+type GroupConfig struct {
+	IsPublic         bool            `json:"isPublic"`
+	LossTreshold     float32         `json:"lossTreshold"`
+	LatencyThreshold float32         `json:"latencyTreshold"`
+	PushNotify       map[string]bool `json:"pushNotify"`
+	IsAutoGroup      bool            `json:"isAutoGroup"`
+	AGNetwork        string          `json:"agNetwork"`
+	AGCount          int             `json:"agCount"`
+	AGSlaves         []string        `json:"agSlaves"`
+}
+
 // ConfigInfo type represent information about current configuration of tests
 type ConfigInfo struct {
 	Counter int64 `json:"counter"`
@@ -33,6 +45,7 @@ type ConfigInfo struct {
 		Timeout  float32             `json:"timeout"`
 		Interval float32             `json:"interval"`
 	}
+	Groups map[string]GroupConfig `json:"groups"`
 }
 
 // AvgChunk is part of GroupStatsData struct
