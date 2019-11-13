@@ -1,6 +1,6 @@
 package main
 
-// this example adds ips specified in command line (or stdin) to all slaves exist on master
+// this example add or removes ips of group from/to specific slaves list
 
 import (
 	"flag"
