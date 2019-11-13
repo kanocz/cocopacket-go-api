@@ -1,7 +1,6 @@
 package api
 
 import (
-	"errors"
 	"net"
 	"net/url"
 )
@@ -37,72 +36,27 @@ func GetSlaveList() ([]string, error) {
 // AddSlave adds slave to master on ip:port with name
 // and possibly copy list of ips from just existing slave copyFrom
 func AddSlave(ip net.IP, port uint16, name string, copyFrom string) error {
-	var r result
-
-	err := Send("POST", mainAPIURL+"/v1/slaves", map[string]interface{}{
+	return _okResultSend("POST", mainAPIURL+"/v1/slaves", map[string]interface{}{
 		"ip":   ip.String(),
 		"port": port,
 		"name": name,
 		"copy": copyFrom,
-	}, &r)
-	if nil != err {
-		return err
-	}
-
-	if r.Result != "OK" && "" != r.Error {
-		return errors.New(r.Error)
-	}
-
-	if r.Result != "OK" {
-		return errors.New("unknown error")
-	}
-
-	return nil
+	})
 }
 
 // DeleteSlave removes slave from master
 func DeleteSlave(slave string) error {
-	var r result
-
-	err := Send("DELETE", mainAPIURL+"/v1/slaves?slave="+url.QueryEscape(slave), nil, &r)
-	if nil != err {
-		return err
-	}
-
-	if r.Result != "OK" && "" != r.Error {
-		return errors.New(r.Error)
-	}
-
-	if r.Result != "OK" {
-		return errors.New("unknown error")
-	}
-
-	return nil
+	return _okResultSend("DELETE", mainAPIURL+"/v1/slaves?slave="+url.QueryEscape(slave), nil)
 }
 
 // AddIP is simple interface for single IP adding
 func AddIP(ip string, slaves []string, description string, groups []string, favourite bool) error {
-	var r result
-
-	err := Send("PUT", mainAPIURL+"/v1/config/ping/"+ip, TestDesc{
+	return _okResultSend("PUT", mainAPIURL+"/v1/config/ping/"+ip, TestDesc{
 		Description: ip + " " + description,
 		Favourite:   favourite,
 		Groups:      groups,
 		Slaves:      slaves,
-	}, &r)
-	if nil != err {
-		return err
-	}
-
-	if r.Result != "OK" && "" != r.Error {
-		return errors.New(r.Error)
-	}
-
-	if r.Result != "OK" {
-		return errors.New("unknown error")
-	}
-
-	return nil
+	})
 }
 
 // AddIPs function adds multiply ips using only one API call
@@ -118,67 +72,21 @@ func AddIPs(ips []string, slaves []string, description string, groups []string, 
 		}
 	}
 
-	var r result
-
-	err := Send("PUT", mainAPIURL+"/v1/mconfig/add", map[string]interface{}{
+	return _okResultSend("PUT", mainAPIURL+"/v1/mconfig/add", map[string]interface{}{
 		"ips": payload,
-	}, &r)
-	if nil != err {
-		return err
-	}
-
-	if r.Result != "OK" && "" != r.Error {
-		return errors.New(r.Error)
-	}
-
-	if r.Result != "OK" {
-		return errors.New("unknown error")
-	}
-
-	return nil
-
+	})
 }
 
 // DeleteIP removes one IP from cocopacket instance
 func DeleteIP(ip string) error {
-	var r result
-
-	err := Send("DELETE", mainAPIURL+"/v1/config/ping/"+ip, nil, &r)
-	if nil != err {
-		return err
-	}
-
-	if r.Result != "OK" && "" != r.Error {
-		return errors.New(r.Error)
-	}
-
-	if r.Result != "OK" {
-		return errors.New("unknown error")
-	}
-
-	return nil
+	return _okResultSend("DELETE", mainAPIURL+"/v1/config/ping/"+ip, nil)
 }
 
 // DeleteIPs function deletes multiply ips using only one API call
 func DeleteIPs(ips []string) error {
-	var r result
-
-	err := Send("PUT", mainAPIURL+"/v1/mconfig/delete", map[string]interface{}{
+	return _okResultSend("PUT", mainAPIURL+"/v1/mconfig/delete", map[string]interface{}{
 		"ips": ips,
-	}, &r)
-	if nil != err {
-		return err
-	}
-
-	if r.Result != "OK" && "" != r.Error {
-		return errors.New(r.Error)
-	}
-
-	if r.Result != "OK" {
-		return errors.New("unknown error")
-	}
-
-	return nil
+	})
 }
 
 // ListUsers return map with logins and associated boolean indicating if user is admin
@@ -235,47 +143,16 @@ func GroupStats(group string, report bool) (GroupStatsData, error) {
 
 // IPsSetSlaves add/remove slaves for list of ips, in case of "true" slave is added, in case of "false" slave removed, unlisted slaves are untouched
 func IPsSetSlaves(ips []string, slaves map[string]bool) error {
-
-	var r result
-
-	err := Send("PUT", mainAPIURL+"/v1/mconfig/slaves", map[string]interface{}{
+	return _okResultSend("PUT", mainAPIURL+"/v1/mconfig/slaves", map[string]interface{}{
 		"ips":    ips,
 		"slaves": slaves,
-	}, &r)
-	if nil != err {
-		return err
-	}
-
-	if r.Result != "OK" && "" != r.Error {
-		return errors.New(r.Error)
-	}
-
-	if r.Result != "OK" {
-		return errors.New("unknown error")
-	}
-
-	return nil
+	})
 }
 
 // GroupSetSlaves add/remove slaves for all ips in group, in case of "true" slave is added, in case of "false" slave removed, unlisted slaves are untouched; pass recursive=true to include subgroups
 func GroupSetSlaves(group string, slaves map[string]bool, recursive bool) error {
-	var r result
-
-	err := Send("PUT", mainAPIURL+"/v1/groupslaves/"+url.QueryEscape(group+"->"), map[string]interface{}{
+	return _okResultSend("PUT", mainAPIURL+"/v1/groupslaves/"+url.QueryEscape(group+"->"), map[string]interface{}{
 		"recursive": recursive,
 		"slaves":    slaves,
-	}, &r)
-	if nil != err {
-		return err
-	}
-
-	if r.Result != "OK" && "" != r.Error {
-		return errors.New(r.Error)
-	}
-
-	if r.Result != "OK" {
-		return errors.New("unknown error")
-	}
-
-	return nil
+	})
 }

@@ -66,6 +66,26 @@ func Get(url string, object interface{}) error {
 	return nil
 }
 
+// wrapper around send and standard result
+func _okResultSend(method string, url string, payload interface{}) error {
+	var r result
+
+	err := Send(method, url, payload, &r)
+	if nil != err {
+		return err
+	}
+
+	if r.Result != "OK" && "" != r.Error {
+		return errors.New(r.Error)
+	}
+
+	if r.Result != "OK" {
+		return errors.New("unknown error")
+	}
+
+	return nil
+}
+
 // Send json-encoded payload to server using specified method and decode response to object
 func Send(method string, url string, payload interface{}, object interface{}) error {
 
