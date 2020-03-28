@@ -8,13 +8,14 @@ import (
 	"log"
 	"os"
 
-	"github.com/kanocz/cocopacket-go-api"
+	api "github.com/kanocz/cocopacket-go-api"
 )
 
 var (
 	url    = flag.String("url", "", "URL of cocopacket master instance")
 	user   = flag.String("user", "", "username for authorization")
 	passwd = flag.String("password", "", "password for authorization")
+	show   = flag.String("show", "name", "type of list, one of name, nameIP, namePort, IP, port")
 )
 
 func main() {
@@ -27,12 +28,38 @@ func main() {
 
 	api.Init(*url, *user, *passwd)
 
-	slaves, err := api.GetSlaveList()
+	if "name" == *show {
+		slaves, err := api.GetSlaveList()
+		if nil != err {
+			log.Fatalln("Error on ip list get:", err)
+		}
+
+		for _, slave := range slaves {
+			println(slave)
+		}
+		return
+	}
+
+	var (
+		slaves map[string]string
+		err    error
+	)
+
+	if "nameIP" == *show || "IP" == *show {
+		slaves, err = api.GetSlavesIPs()
+	} else {
+		slaves, err = api.GetSlavesAddrs()
+	}
+
 	if nil != err {
 		log.Fatalln("Error on ip list get:", err)
 	}
 
-	for _, slave := range slaves {
-		println(slave)
+	for slave, addr := range slaves {
+		if "nameIP" == *show || "namePort" == *show {
+			fmt.Print(slave + ": ")
+		}
+		fmt.Println(addr)
 	}
+
 }

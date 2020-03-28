@@ -3,6 +3,7 @@ package api
 import (
 	"net"
 	"net/url"
+	"strings"
 )
 
 var (
@@ -31,6 +32,24 @@ func GetSlaveList() ([]string, error) {
 		list = append(list, slave)
 	}
 	return list, err
+}
+
+// GetSlavesIPs returns list of defined slave probes with their ips
+func GetSlavesIPs() (map[string]string, error) {
+	var result map[string]string
+	err := Get(mainAPIURL+"/v1/slaves", &result)
+	slave2ip := make(map[string]string, len(result))
+	for slave, addr := range result {
+		slave2ip[slave] = strings.SplitN(addr, ":", 2)[0]
+	}
+	return slave2ip, err
+}
+
+// GetSlavesAddrs returns list of defined slave probes with their ip:port
+func GetSlavesAddrs() (map[string]string, error) {
+	var result map[string]string
+	err := Get(mainAPIURL+"/v1/slaves", &result)
+	return result, err
 }
 
 // AddSlave adds slave to master on ip:port with name
