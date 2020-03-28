@@ -10,7 +10,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/kanocz/cocopacket-go-api"
+	api "github.com/kanocz/cocopacket-go-api"
 )
 
 var (
@@ -19,7 +19,7 @@ var (
 	passwd = flag.String("password", "", "password for authorization")
 	desc   = flag.String("description", "auto added ip", "description setted for new added ips")
 	group  = flag.String("group", "auto", "to which group add ips")
-	fav    = flag.Bool("favourite", false, "Set new added ips as favourite")
+	fav    = flag.Bool("favorite", false, "Set new added ips as favorite")
 	stdin  = flag.Bool("stdin", false, "read ip list from stdin instead of command line")
 	slaves = flag.String("slaves", "", "comma separated list of slaves, all slaves if empty")
 )
