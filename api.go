@@ -96,6 +96,13 @@ func AddIPs(ips []string, slaves []string, description string, groups []string, 
 	})
 }
 
+// AddIPsRaw is extended function adds multiply ips using only one API call
+func AddIPsRaw(ips map[string]TestDesc) error {
+	return _okResultSend("PUT", mainAPIURL+"/v1/mconfig/add", map[string]interface{}{
+		"ips": ips,
+	})
+}
+
 // DeleteIP removes one IP from cocopacket instance
 func DeleteIP(ip string) error {
 	return _okResultSend("DELETE", mainAPIURL+"/v1/config/ping/"+ip, nil)
