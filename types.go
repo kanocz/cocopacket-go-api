@@ -60,3 +60,13 @@ type GroupStatsData struct {
 	Ping map[string]map[int64]*AvgChunk
 	HTTP map[string]map[int64]*AvgChunk
 }
+
+// SlaveStatus is result of /v1/status/slaves call
+type SlaveStatus struct {
+	Host    string    `json:"host"`
+	Status  string    `json:"status"`
+	Version string    `json:"version"`
+	Source  string    `json:"source"`
+	Source6 string    `json:"source6"`
+	Last    time.Time `json:"last"`
+}

@@ -45,6 +45,41 @@ func GetSlavesIPs() (map[string]string, error) {
 	return slave2ip, err
 }
 
+// GetSlavesSources returns list of defined slave probes with IPv4 ips from which ping/traces are initiated
+func GetSlavesSources() (map[string]string, error) {
+	slaves, err := GetSlavesStatus()
+	if nil != err {
+		return nil, err
+	}
+
+	result := make(map[string]string, len(slaves))
+	for slave, status := range slaves {
+		result[slave] = status.Source
+	}
+	return result, err
+}
+
+// GetSlavesSources6 returns list of defined slave probes with IPv6 ips from which ping/traces are initiated
+func GetSlavesSources6() (map[string]string, error) {
+	slaves, err := GetSlavesStatus()
+	if nil != err {
+		return nil, err
+	}
+
+	result := make(map[string]string, len(slaves))
+	for slave, status := range slaves {
+		result[slave] = status.Source6
+	}
+	return result, err
+}
+
+// GetSlavesStatus returns actual slaves status
+func GetSlavesStatus() (map[string]SlaveStatus, error) {
+	var result map[string]SlaveStatus
+	err := Get(mainAPIURL+"/v1/status/slaves", &result)
+	return result, err
+}
+
 // GetSlavesAddrs returns list of defined slave probes with their ip:port
 func GetSlavesAddrs() (map[string]string, error) {
 	var result map[string]string
