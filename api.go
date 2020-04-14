@@ -69,23 +69,23 @@ func DeleteSlave(slave string) error {
 }
 
 // AddIP is simple interface for single IP adding
-func AddIP(ip string, slaves []string, description string, groups []string, favourite bool) error {
+func AddIP(ip string, slaves []string, description string, groups []string, favorite bool) error {
 	return _okResultSend("PUT", mainAPIURL+"/v1/config/ping/"+ip, TestDesc{
 		Description: ip + " " + description,
-		Favourite:   favourite,
+		Favorite:    favorite,
 		Groups:      groups,
 		Slaves:      slaves,
 	})
 }
 
 // AddIPs function adds multiply ips using only one API call
-func AddIPs(ips []string, slaves []string, description string, groups []string, favourite bool) error {
+func AddIPs(ips []string, slaves []string, description string, groups []string, favorite bool) error {
 	payload := make(map[string]TestDesc, len(ips))
 
 	for _, ip := range ips {
 		payload[ip] = TestDesc{
 			Description: ip + " " + description,
-			Favourite:   favourite,
+			Favorite:    favorite,
 			Groups:      groups,
 			Slaves:      slaves,
 		}

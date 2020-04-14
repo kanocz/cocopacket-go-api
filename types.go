@@ -11,7 +11,7 @@ type result struct {
 type TestDesc struct {
 	Groups      []string  `json:"cat"`
 	Description string    `json:"desc"`
-	Favourite   bool      `json:"fav"`
+	Favorite    bool      `json:"fav"`
 	Slaves      []string  `json:"slaves"`
 	AutoAdded   time.Time `json:"auto-added,omitempty"`
 	AS          int64     `json:"as"`
@@ -52,7 +52,7 @@ type ConfigInfo struct {
 type AvgChunk struct {
 	Count   int     `json:"count"`   // total count of tests
 	Loss    int     `json:"loss"`    // count of lost tests
-	Latency float32 `json:"latency"` // total SUMM of latency
+	Latency float32 `json:"latency"` // total SUM of latency
 }
 
 // GroupStatsData is result of GroupStats api call
