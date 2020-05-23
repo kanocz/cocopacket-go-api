@@ -1,7 +1,7 @@
 package main
 
 /* this example adds slaves as ips to ping each other (using same uplink)
-   to use it all slaves have to have name in format LOCATION-UPLINK like NYC-LEVEL3 (names like -DEFAULT are ignored) + locations C-* also
+   to use it all slaves have to have name in format LOCATION-UPLINK like NYC-LEVEL3 (names like C-* are ignored)
    P.S.: this example show how to use raw ip adding */
 
 import (
@@ -43,7 +43,7 @@ func main() {
 	uplinks := map[string][]string{}
 	for slave := range slaves {
 		parts := strings.Split(slave, "-")
-		if "DEFAULT" == parts[len(parts)-1] || "C" == parts[0] {
+		if "C" == parts[0] {
 			continue
 		}
 		uplink := parts[len(parts)-1]
@@ -69,6 +69,14 @@ func main() {
 
 				if *dryrun {
 					fmt.Printf("  %s (%s): %+v\n", host, slaves[host+"-"+uplink], xslaves)
+				}
+
+				// some slaves may not source have ip defined (unconnected, for example)
+				if "" == slaves[host+"-"+uplink] {
+					if *dryrun {
+						fmt.Println(host+"-"+uplink, "doesn't have source IP defined!")
+					}
+					continue
 				}
 
 				ips[slaves[host+"-"+uplink]] = api.TestDesc{
