@@ -54,9 +54,9 @@ func (prometheusHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("# HELP cocopacket_packet_loss_percent\n# TYPE cocopacket_packet_loss_percent gauge\n"))
 	for ip, data := range pings {
 		if 0 == data.Loss {
-			w.Write([]byte(fmt.Sprintf("cocopacket_latency{ip=\"%s\"%s} 0\n", ip, *extra)))
+			w.Write([]byte(fmt.Sprintf("cocopacket_packet_loss_percent{ip=\"%s\"%s} 0\n", ip, *extra)))
 		} else {
-			w.Write([]byte(fmt.Sprintf("cocopacket_latency{ip=\"%s\"%s} %.2f\n", ip, *extra, float64(data.Loss)/float64(data.Count)*100)))
+			w.Write([]byte(fmt.Sprintf("cocopacket_packet_loss_percent{ip=\"%s\"%s} %.2f\n", ip, *extra, float64(data.Loss)/float64(data.Count)*100)))
 		}
 	}
 }
