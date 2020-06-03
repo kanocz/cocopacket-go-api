@@ -1,6 +1,7 @@
 package api
 
 import (
+	"errors"
 	"net"
 	"net/url"
 	"strings"
@@ -200,6 +201,21 @@ func GroupStats(group string, report bool) (GroupStatsData, error) {
 	}
 	err := Get(mainAPIURL+"/v1/catstats/"+url.QueryEscape(group+"->")+reportAdd, &data)
 	return data, err
+}
+
+// GroupLastStats returns stats for all IPs/URLs in group on one slave for last minute period (used for exports to other systems)
+func GroupLastStats(group string, slave string) (ips map[string]*AvgChunk, urls map[string]*AvgChunk, err error) {
+	var data struct {
+		Ping   map[string]*AvgChunk `json:"Ping"`
+		HTTP   map[string]*AvgChunk `json:"HTTP"`
+		Result string               `json:"result"`
+		Error  string               `json:"error"`
+	}
+	err = Get(mainAPIURL+"/v1/minute/"+url.QueryEscape(group+"->")+"?slave="+url.QueryEscape(slave), &data)
+	if nil == err && "error" == data.Result {
+		err = errors.New(data.Error)
+	}
+	return data.Ping, data.HTTP, err
 }
 
 // IPsSetSlaves add/remove slaves for list of ips, in case of "true" slave is added, in case of "false" slave removed, unlisted slaves are untouched
