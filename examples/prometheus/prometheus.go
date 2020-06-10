@@ -5,6 +5,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"log"
@@ -27,6 +28,15 @@ var (
 	extra  = flag.String("extra", ", department=\"cocopacket\"", "additional string metrics")
 )
 
+func stringJSON(value interface{}) string {
+	b, err := json.Marshal(value)
+	if nil != err {
+		log.Printf("Error encoding value %+v: %s", value, err.Error())
+		return `""`
+	}
+	return string(b)
+}
+
 type prometheusHandler struct{}
 
 func (prometheusHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -46,17 +56,26 @@ func (prometheusHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	config, err := api.GetConfigInfo()
+	if nil != err {
+		w.Write([]byte("# error loading cocopacket config: " + err.Error()))
+		return
+	}
+
 	w.Write([]byte("# HELP cocopacket_latency in ms\n# TYPE cocopacket_latency gauge\n"))
 	for ip, data := range pings {
-		w.Write([]byte(fmt.Sprintf("cocopacket_latency{ip=\"%s\"%s} %.2f\n", ip, *extra, data.Latency)))
+		w.Write([]byte(fmt.Sprintf("cocopacket_latency{ip=\"%s\", description=%s%s} %.2f\n",
+			ip, stringJSON(config.Ping.IPs[ip].Description), *extra, data.Latency)))
 	}
 
 	w.Write([]byte("# HELP cocopacket_packet_loss_percent\n# TYPE cocopacket_packet_loss_percent gauge\n"))
 	for ip, data := range pings {
 		if 0 == data.Loss {
-			w.Write([]byte(fmt.Sprintf("cocopacket_packet_loss_percent{ip=\"%s\"%s} 0\n", ip, *extra)))
+			w.Write([]byte(fmt.Sprintf("cocopacket_packet_loss_percent{ip=\"%s\", description=%s%s} 0\n",
+				ip, stringJSON(config.Ping.IPs[ip].Description), *extra)))
 		} else {
-			w.Write([]byte(fmt.Sprintf("cocopacket_packet_loss_percent{ip=\"%s\"%s} %.2f\n", ip, *extra, float64(data.Loss)/float64(data.Count)*100)))
+			w.Write([]byte(fmt.Sprintf("cocopacket_packet_loss_percent{ip=\"%s\", description=%s%s} %.2f\n",
+				ip, stringJSON(config.Ping.IPs[ip].Description), *extra, float64(data.Loss)/float64(data.Count)*100)))
 		}
 	}
 }
