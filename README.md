@@ -1,6 +1,9 @@
 # cocopacket-go-api
 cocopacket.com API implementation implemented in golang
 
+## api documentation
+[api.md](api.md "API documentation")
+
 ## api examples
 please look at examples folder - there are some usefull tools that are just prepared for usege covering basic functions like managing ips, users and so on
 
