@@ -16,11 +16,12 @@ import (
 )
 
 var (
-	url      = flag.String("url", "", "URL of cocopacket master instance")
-	user     = flag.String("user", "", "username for authorization")
-	passwd   = flag.String("password", "", "password for authorization")
-	filename = flag.String("filename", "stdin", "filename to read ip list csv from")
-	slaves   = flag.String("slaves", "", "comma separated list of slaves, all slaves if empty")
+	url         = flag.String("url", "", "URL of cocopacket master instance")
+	user        = flag.String("user", "", "username for authorization")
+	passwd      = flag.String("password", "", "password for authorization")
+	filename    = flag.String("filename", "stdin", "filename to read ip list csv from")
+	slaves      = flag.String("slaves", "", "comma separated list of slaves, all slaves if empty")
+	removeOther = flag.Bool("remove", false, "removes all IPs not listed in csv file (danger!)")
 )
 
 func main() {
@@ -56,6 +57,13 @@ func main() {
 	}
 
 	ips := map[string]api.TestDesc{}
+	oldList := map[string]api.TestDesc{}
+	csvIPs := []string{}
+
+	if *removeOther {
+		config, _ := api.GetConfigInfo() // we can ignore error here - in worst case we'll delete no remaining IPs
+		oldList = config.Ping.IPs
+	}
 
 	for scanner.Scan() {
 		parts := strings.Split(strings.TrimSpace(scanner.Text()), ",")
@@ -72,12 +80,57 @@ func main() {
 			Description: parts[0],
 			Groups:      []string{parts[1] + "->" + parts[2] + "->"},
 		}
+
+		if *removeOther {
+			csvIPs = append(csvIPs, parts[3])
+		}
 	}
 
 	err = api.AddIPsRaw(ips)
 
 	if nil != err {
 		log.Fatalln("Error add ips call:", err)
+	}
+
+	if *removeOther {
+		ipsToDelete := []string{}
+
+		for ip := range oldList {
+			if _, ok := ips[ip]; ok {
+				continue
+			}
+			ipsToDelete = append(ipsToDelete, ip)
+		}
+
+		if len(ipsToDelete) > 0 {
+			// remove IPs unlisted in csv
+			err = api.DeleteIPs(ipsToDelete)
+			if nil != err {
+				log.Fatalln("Error delete ips call:", err)
+			}
+
+			// also remove
+			allSlaves, err := api.GetSlaveList()
+			if nil != err {
+				log.Fatalln("Error receiving slaves call:", err)
+			}
+
+			newSlaves := map[string]bool{}
+			for _, slave := range slaveList {
+				newSlaves[slave] = true
+			}
+			counter := 0
+			for _, slave := range allSlaves {
+				if !newSlaves[slave] {
+					newSlaves[slave] = false
+					counter++
+				}
+			}
+			if counter > 0 { // we have some slaves in system not listed in arguments, removeing from ips
+				api.IPsSetSlaves(csvIPs, newSlaves)
+			}
+		}
+
 	}
 
 	fmt.Println("OK")
