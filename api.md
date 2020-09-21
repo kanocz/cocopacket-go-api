@@ -193,3 +193,21 @@ json-payload:
 
 ## get backend version and license info
 *GET* `/v1/status/version`   
+
+## get current password recovery mail template ![1.0.4-4](https://img.shields.io/static/v1?label=ver&message=1.0.4-4&color=white)
+
+*GET* `/v1/config/preset`
+i
+
+## set new password recovery mail template ![1.0.4-4](https://img.shields.io/static/v1?label=ver&message=1.0.4-4&color=white)
+
+*PUT* `/v1/config/preset`
+json-payload:
+```json
+{
+    "subject": "CocoPacket password reset",
+    "contentType": "text/plain",
+    "body": "Your password for CocoPacket on address {URL} is reseted to {PASSWORD}"
+}
+```
+`{URL}` and `{PASSWORD}` will be replaced with actual URL of instance and new password
