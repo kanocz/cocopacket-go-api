@@ -210,4 +210,5 @@ json-payload:
     "body": "Your password for CocoPacket on address {URL} is reseted to {PASSWORD}"
 }
 ```
-`{URL}` and `{PASSWORD}` will be replaced with actual URL of instance and new password
+`{URL}` and `{PASSWORD}` will be replaced with actual URL of instance and new password  
+in case of empty subject/contentType/body in *PUT* call they will be filled with default values
