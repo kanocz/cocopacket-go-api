@@ -76,7 +76,7 @@ slaves with `false` values will be removed from all IPs/tests in group (and subg
 ## get hash for public ip link
 *GET* `/v1/linkkey/:ip`   
 
-## set maintenance list
+## set maintenance list ![1.0.3-6](https://img.shields.io/static/v1?label=ver&message=1.0.3-6&color=white)
 *PUT* `/v1/maintenance` _admin_  
 json-payload:
 ```json
@@ -84,7 +84,7 @@ json-payload:
 ```
 set list of IPs for which push notifications is *off*
 
-## get current maintenance list
+## get current maintenance list ![1.0.3-6](https://img.shields.io/static/v1?label=ver&message=1.0.3-6&color=white)
 *GET* `/v1/maintenance`   
 
 ## add multiply IPs/tests at the same time
@@ -136,10 +136,42 @@ json-payload
 ```
 rules is the same as for group-slave-add/remove
 
-## configure push notifications
+## configure push notifications ![1.0.2-0](https://img.shields.io/static/v1?label=ver&message=1.0.2-0&color=white)
 *PUT* `/v1/notify` _admin_  
+put whole list of push notify destinations
+```json
+{
+    "sms": {
+	    "method": "POST",
+	    "url": "https://sms.gateway.com/something-more..",
+	    "payload": "{ some json... }",
+	    "contentType": "application/json",
+	    "headers": {
+            "Auth": "token"
+        },
+	    "frequency": 60,
+	    "frequencyPerIP": 300,
+	    "minSlavesFailed": 1
+    },
+    "telegram": ...
+}
+```
+`method` GET/PUT/POST  
+`url` just a url :) 
+`payload`  what to send, valid for PUT/POST  
+`contentType`  usualy application/json or text/plain  
+`headers`  additional HTTP headers needed
+`frequency`  one notification per "frequency" secodns (for example 60 means that only one message per minute will be send), can be set to zero  
+`frequencyPerIP`  one notification per "frequency" secodns for one ip (for example 300 means that only one message per 5 minutes will be send for failed ip... but other messages will be send regarding to `frequency`)  
+`minSlavesFailed` ![1.0.4-6](https://img.shields.io/static/v1?label=ver&message=1.0.4-6-0&color=white) send message only if at least minSlavesFailed slaves reports a problem with one IP   
 
-## get current list of push notification configurations
+in `url` and `payload` any `<*IP*>`, `<*SLAVE*>`, `<*LATENCY*>`, `<*LOSS*>` and `<*GROUP*>` will be replaced with current inident values  
+in case of `minSlavesFailed > 1` data from message received from last slave that triggered incident is used  
+additional values `<*SCOUNT*>` (at least `<*SCOUNT*>` slaves triggered) and `<*SLAVES*>` (comma separated list of slave at the moment of event pushing) added ![1.0.4-6](https://img.shields.io/static/v1?label=ver&message=1.0.4-6-0&color=white)
+
+push notifications are processes over 60-second slices of data so it's always be about 1-minute delay
+
+## get current list of push notification configurations ![1.0.2-0](https://img.shields.io/static/v1?label=ver&message=1.0.2-0&color=white)
 *GET* `/v1/notify`   
 
 ## send test notification
