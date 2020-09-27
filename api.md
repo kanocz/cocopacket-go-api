@@ -49,6 +49,7 @@ fields description:
 * `agNetwork` network (like 8.8.8.0/24) or AS (like AS15169) where too lookup live IPs for this group
 * `agCount` how many live IPs this group needs
 * `agSlaves` on which slaves add new IPs
+* `slavesThresholds` object(map) with string keys (slave names) and 3-field object as a value containig `lossThreshold`, `latencyThreshold` and `timeThreshold` overrides for specified slave(s) ![1.0.4-7](https://img.shields.io/static/v1?label=ver&message=1.0.4-7&color=white)
 
 ## rename group
 *PUT* `/v1/group/:group` _admin_  
@@ -163,11 +164,11 @@ put whole list of push notify destinations
 `headers`  additional HTTP headers needed
 `frequency`  one notification per "frequency" secodns (for example 60 means that only one message per minute will be send), can be set to zero  
 `frequencyPerIP`  one notification per "frequency" secodns for one ip (for example 300 means that only one message per 5 minutes will be send for failed ip... but other messages will be send regarding to `frequency`)  
-`minSlavesFailed` ![1.0.4-6](https://img.shields.io/static/v1?label=ver&message=1.0.4-6-0&color=white) send message only if at least minSlavesFailed slaves reports a problem with one IP   
+`minSlavesFailed` ![1.0.4-6](https://img.shields.io/static/v1?label=ver&message=1.0.4-6&color=white) send message only if at least minSlavesFailed slaves reports a problem with one IP   
 
 in `url` and `payload` any `<*IP*>`, `<*SLAVE*>`, `<*LATENCY*>`, `<*LOSS*>` and `<*GROUP*>` will be replaced with current inident values  
 in case of `minSlavesFailed > 1` data from message received from last slave that triggered incident is used  
-additional values `<*SCOUNT*>` (at least `<*SCOUNT*>` slaves triggered) and `<*SLAVES*>` (comma separated list of slave at the moment of event pushing) added ![1.0.4-6](https://img.shields.io/static/v1?label=ver&message=1.0.4-6-0&color=white)
+additional values `<*SCOUNT*>` (at least `<*SCOUNT*>` slaves triggered) and `<*SLAVES*>` (comma separated list of slave at the moment of event pushing) added ![1.0.4-6](https://img.shields.io/static/v1?label=ver&message=1.0.4-6&color=white)
 
 push notifications are processes over 60-second slices of data so it's always be about 1-minute delay
 
