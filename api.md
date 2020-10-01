@@ -234,7 +234,7 @@ i
 
 ## set new password recovery mail template ![1.0.4-4](https://img.shields.io/static/v1?label=ver&message=1.0.4-4&color=white)
 
-*PUT* `/v1/config/preset`
+*POST* `/v1/config/preset`
 json-payload:
 ```json
 {
